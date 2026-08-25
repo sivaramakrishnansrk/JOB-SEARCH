@@ -29,16 +29,21 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Prepare Wrapper and Build Directory
+      - name: Prepare Wrapper, Properties and Build Directory
         run: |
-          # Detect nested folder if project files are inside MechJobRadar or JobTrackerApp
+          # Detect nested directories if present
           if [ -d "MechJobRadar" ]; then
             cd MechJobRadar
           elif [ -d "JobTrackerApp" ]; then
             cd JobTrackerApp
           fi
           
-          # Generate gradlew wrapper if not committed to repository
+          # Force AndroidX flags in gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" >> gradle.properties
+          
+          # Generate gradlew wrapper if missing
           if [ ! -f "gradlew" ]; then
             gradle wrapper
           fi
